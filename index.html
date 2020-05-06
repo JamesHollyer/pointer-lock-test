@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id=lock_element style="background-color: aqua;">
+            <button id="lockunadjusted">lock unadjusted</button>
+            <button id="lock">lock</button>
+            <button id="locknopromise">lock w/o promise</button>
+        </div>
+        <button id="new_max">track max</button>
+        <!-- <span>movementx: </span> -->
+        <span id="movementx"></span>
+        <!-- <span>movementy: </span> -->
+        <span id="movementy"></span>
+        <div id="maxes">
+        </div>
+        <script>
+            let lock_element = document.getElementById("lock_element");
+            let lock_button = document.getElementById("lock");
+            let lock_no_promise_button = document.getElementById("locknopromise");
+            let lock_unadjusted_button = document.getElementById("lockunadjusted");
+            let x_label = document.getElementById("movementx");
+            let y_label = document.getElementById("movementy");
+            let new_max = document.getElementById("new_max");
+            let maxes_label = document.getElementById("maxes");
+
+            document.onmousemove = 
+			    function(){
+                    // lock_element.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
+                    lock_element.requestPointerLock();
+			    };
+
+            let maxes = [];
+            let currentMax = 0;
+            // lock_element.requestPointerLock({unadjustedMovement:true}).then((test) => {
+            //         console.log('got pointer lock promise :)');
+            //         console.log('promise returned: ', test);
+            //     }).catch(e => {
+            //         console.log('promise rejected', e);
+            //         console.log(e.name);
+            //     }) ;
+
+            lock_element.addEventListener("mousemove", (event) => {
+                // console.log('mouse moved', event);
+                x_label.textContent = "movementX: " + event.movementX;
+                y_label.textContent = "movementY: " + event.movementY;
+                if(event.movementX > currentMax) {
+                    currentMax = event.movementX;
+                }
+            })
+            lock_button.addEventListener("click", (event) => {
+                console.log('button clicked');
+                lock_element.requestPointerLock().then((test) => {
+                    console.log('got pointer lock promise :)');
+                    console.log('promise returned: ', test);
+                }).catch(e => {
+                    console.log('promise rejected', e);
+                    console.log(e.name);
+                });
+                lock_element.requestPointerLock().then((test) => {
+                    console.log('2nd promise returned: ', test);
+                }).catch(e => {
+                    console.log('promise rejected...2nd', e);
+                    console.log(e.name);
+                });
+            })
+
+            lock_no_promise_button.addEventListener("click", (event) => {
+                console.log('button clicked');
+                lock_element.requestPointerLock();
+                lock_element.requestPointerLock();
+            })
+
+            lock_unadjusted_button.addEventListener("click", (event) => {
+                console.log('button clicked');
+                lock_element.requestPointerLock({unadjustedMovement:true}).then((test) => {
+                    console.log('got pointer lock promise :)');
+                    console.log('promise returned: ', test);
+                }).catch(e => {
+                    console.log('promise rejected', e);
+                    console.log(e.name);
+                }) ;
+            })
+
+            new_max.addEventListener("click", (event) => {
+                maxes.push(currentMax);
+                currentMax = 0;
+                maxes_label.textContent = maxes.join();
+            });
+
+            document.addEventListener("pointerlockerror", (event) => {
+                console.log('got pointerlockerror', event);
+            })
+        </script>
+    </body>
+</html>
